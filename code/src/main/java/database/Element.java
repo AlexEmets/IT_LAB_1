@@ -79,6 +79,7 @@ public class Element implements Serializable {
         return column;
     }
 
+    public void setColumn(String new_column) {column = new_column;}
     public String getValue() {
         return value;
     }

@@ -146,4 +146,41 @@ public class Table {
         }
         return result;
     }
+
+    public void renameColumn(String currentColumnName, String newColumnName) {
+        // Перевірка наявності поточного стовпчика
+        boolean columnExists = false;
+        for (Row row : rows) {
+            for (Element element : row.getElements()) {
+                if (element.getColumn().equals(currentColumnName)) {
+                    columnExists = true;
+                    break;
+                }
+            }
+            if (columnExists) break;
+        }
+
+        if (!columnExists) {
+            throw new IllegalArgumentException("Стовпець з назвою " + currentColumnName + " не існує.");
+        }
+
+        // Перевірка на відсутність нової назви стовпчика
+        for (Row row : rows) {
+            for (Element element : row.getElements()) {
+                if (element.getColumn().equals(newColumnName)) {
+                    throw new IllegalArgumentException("Стовпець з назвою " + newColumnName + " вже існує.");
+                }
+            }
+        }
+
+        // Перейменування стовпчика
+        for (Row row : rows) {
+            for (Element element : row.getElements()) {
+                if (element.getColumn().equals(currentColumnName)) {
+                    element.setColumn(newColumnName);
+                }
+            }
+        }
+    }
+
 }

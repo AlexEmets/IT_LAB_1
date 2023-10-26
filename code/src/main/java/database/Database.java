@@ -11,6 +11,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.jsoup.helper.StringUtil.isNumeric;
+
 public class Database {
 
     private String filePath;
@@ -130,6 +132,69 @@ public class Database {
                         result.setRows(leftTable.subtract(rightTable));
                         break;
                     }
+                    case SORT_BY_COLUMN: {
+                        String tableName = matches.get(0);
+                        String columnName = matches.get(1);
+                        String order = (matches.size() > 2) ? matches.get(2) : "ASC"; // Порядок сортування (за замовчуванням - ASC)
+
+                        Table tableToSort = tables.get(tableName);
+
+//                        if (tableToSort == null) {
+//                            result.setError("Таблиця " + tableName + " не існує.");
+//                            break;
+//                        }
+//
+//                        if (!tableToSort.columnExists(columnName)) {
+//                            result.setError("Стовпець " + columnName + " не існує в таблиці " + tableName + ".");
+//                            break;
+//                        }
+
+                        List<Row> sortedRows = tableToSort.getRows().stream()
+                                .sorted((row1, row2) -> {
+                                    Element elem1 = row1.getElement(columnName);
+                                    Element elem2 = row2.getElement(columnName);
+
+                                    // Якщо елементи можна порівняти як цілі числа:
+                                    if (isNumeric(elem1.getValue()) && isNumeric(elem2.getValue())) {
+                                        int comparison = Integer.compare(Integer.parseInt(elem1.getValue()), Integer.parseInt(elem2.getValue()));
+                                        return "DESC".equalsIgnoreCase(order) ? -comparison : comparison;
+                                    }
+
+                                    // Якщо елементи порівнюються як рядки:
+                                    int comparison = elem1.getValue().compareToIgnoreCase(elem2.getValue());
+                                    return "DESC".equalsIgnoreCase(order) ? -comparison : comparison;
+                                })
+                                .collect(Collectors.toList());
+
+                        result.setRows(sortedRows);
+                        break;
+                    }
+
+                    case ALTER_TABLE_RENAME_COLUMN: {
+                        String tableName = matches.get(0);
+                        String currentColumnName = matches.get(1);
+                        String newColumnName = matches.get(2);
+
+                        // Перевірка наявності таблиці
+                        Table tableToAlter = tables.get(tableName);
+//                        if (tableToAlter == null) {
+//                            result.setError("Таблиця " + tableName + " не існує.");
+//                            break;
+//                        }
+//
+//                        // Перевірка наявності стовпчика
+//                        if (!tableToAlter.columnExists(currentColumnName)) {
+//                            result.setError("Стовпець " + currentColumnName + " не існує в таблиці " + tableName + ".");
+//                            break;
+//                        }
+
+                        // Зміна імені стовпчика
+                        tableToAlter.renameColumn(currentColumnName, newColumnName);
+
+                        // Встановлення результату
+//                        result.setSuccess("Стовпець " + currentColumnName + " було успішно перейменовано на " + newColumnName + " в таблиці " + tableName + ".");
+                        break;
+                    }
                 }
 
                 if (modified) save();
@@ -187,4 +252,47 @@ public class Database {
         gson.toJson(this, writer);
         writer.close();
     }
+
+    public void rearrangeColumn(String tableName, String columnName, String newPosition) throws Exception {
+//        Table table = tables.get(tableName);
+//        if (table == null) {
+//            throw new Exception("Table not found");
+//        }
+//
+//        // 1. Rearrange columns in the table structure
+//        LinkedHashMap<String, Column> newColumnsOrder = new LinkedHashMap<>();
+//        int currentIndex = 0;
+//        boolean added = false;
+//
+//        for (Map.Entry<String, Column> entry : table.getColumns().entrySet()) {
+//            if (currentIndex == newPosition) {
+//                newColumnsOrder.put(columnName, table.getColumn(columnName));
+//                added = true;
+//            }
+//
+//            // Skip the original position of the moving column
+//            if (!entry.getKey().equals(columnName)) {
+//                newColumnsOrder.put(entry.getKey(), entry.getValue());
+//                currentIndex++;
+//            }
+//        }
+//
+//        // If column was not added in the loop (means it should be the last column)
+//        if (!added) {
+//            newColumnsOrder.put(columnName, table.getColumn(columnName));
+//        }
+//
+//        // Set the rearranged columns back to the table
+//        table.setColumns(newColumnsOrder);
+//
+//        // 2. Rearrange elements in each row according to the new columns order
+//        for (Row row : table.getRows()) {
+//            LinkedHashMap<String, Element> rearrangedRow = new LinkedHashMap<>();
+//            for (String colName : newColumnsOrder.keySet()) {
+//                rearrangedRow.put(colName, row.getElement(colName));
+//            }
+//            row.setElements(rearrangedRow);
+//        }
+    }
+
 }

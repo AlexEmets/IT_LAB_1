@@ -18,7 +18,12 @@ public enum QueryRegex {
     LIST_TABLES("^\\s*(LIST\\s+TABLES)\\s*$"),
 
     // SUBTRACT <tablename1> FROM <tablename2>
-    SUBTRACT("^\\s*SUBTRACT\\s+([^\\s]+)\\s+FROM\\s+([^\\s]+)\\s*$");
+    SUBTRACT("^\\s*SUBTRACT\\s+([^\\s]+)\\s+FROM\\s+([^\\s]+)\\s*$"),
+
+    // SELECT * FROM <tablename> ORDER BY <columnname> [ASC/DESC]
+    SORT_BY_COLUMN("^\\s*SELECT\\s+\\*\\s+FROM\\s+([^\\s]+)\\s+ORDER\\s+BY\\s+([^\\s]+)\\s*(ASC|DESC)?\\s*$"),
+
+    ALTER_TABLE_RENAME_COLUMN("^\\s*ALTER\\s+TABLE\\s+([^\\s]+)\\s+RENAME\\s+COLUMN\\s+([^\\s]+)\\s+TO\\s+([^\\s]+)\\s*$");
 
     private String regex;
     public final String SUFFIX = "/i";
