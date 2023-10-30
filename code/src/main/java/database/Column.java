@@ -6,8 +6,8 @@ public class Column {
         FLOAT,
         CHAR,
         STR,
-        EMAIL,
-        ENUM
+        DATE,
+        DATE_INV
     }
 
     private Type type;

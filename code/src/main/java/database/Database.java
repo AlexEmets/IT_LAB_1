@@ -171,6 +171,7 @@ public class Database {
                     }
 
                     case ALTER_TABLE_RENAME_COLUMN: {
+
                         String tableName = matches.get(0);
                         String currentColumnName = matches.get(1);
                         String newColumnName = matches.get(2);
@@ -190,7 +191,7 @@ public class Database {
 
                         // Зміна імені стовпчика
                         tableToAlter.renameColumn(currentColumnName, newColumnName);
-
+                        modified = true;
                         // Встановлення результату
 //                        result.setSuccess("Стовпець " + currentColumnName + " було успішно перейменовано на " + newColumnName + " в таблиці " + tableName + ".");
                         break;

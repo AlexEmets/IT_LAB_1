@@ -148,6 +148,9 @@ public class Table {
     }
 
     public void renameColumn(String currentColumnName, String newColumnName) {
+        System.out.println(currentColumnName);
+        System.out.println(newColumnName);
+
         // Перевірка наявності поточного стовпчика
         boolean columnExists = false;
         for (Row row : rows) {

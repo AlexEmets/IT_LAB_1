@@ -3,9 +3,9 @@ package database;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,36 +43,23 @@ public class Element implements Serializable {
     }
 
     @JsonIgnore
-    public String getAsEmail() throws Exception {
-        Pattern regexPattern = Pattern.compile("^[(a-zA-Z-0-9-\\_\\+\\.)]+@[(a-z-A-z)]+\\.[(a-zA-z)]{2,3}$");
-        Matcher regMatcher = regexPattern.matcher(value);
-        if (regMatcher.matches()) {
-            return value;
-        } else {
-            throw new Exception("Invalid email value");
-        }
+    public Date getAsDate() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(value);
+        return date;
     }
 
     @JsonIgnore
-    public MyEnum getAsEnum() throws Exception {
-        Pattern regexPattern = Pattern.compile("^\\s*\\{(\\s*\\w* *= *\\d*\\s*;?)*?\\s*\\}$");
-        Matcher regMatcher = regexPattern.matcher(value);
-        if (regMatcher.matches()) {
-            String str = value;
-            str = str.replaceAll("[{}]", "");
-            ArrayList<String> arr = Arrays.stream(str.split(";")).map(String::trim).collect(Collectors.toCollection(ArrayList::new));
-            ArrayList<String> keys = new ArrayList<>();
-            ArrayList<Integer> values = new ArrayList<>();
-            for (String a : arr) {
-                String[] pair = a.split("=");
-                keys.add(pair[0]);
-                values.add(parseInt(pair[1]));
-            }
-            MyEnum myEnum = new MyEnum(keys, values);
-            return myEnum;
-        } else {
-            throw new Exception("Invalid email value");
+    public List<Date> getAsDateInv() throws ParseException {
+        List<Date> dateList = new ArrayList<>();
+        String[] dateValues = value.split(",");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (String dateStr : dateValues) {
+            dateList.add(sdf.parse(dateStr.trim()));
         }
+
+        return dateList;
     }
 
     public String getColumn() {
@@ -110,11 +97,11 @@ public class Element implements Serializable {
                 case STR:
                     getAsString();
                     break;
-                case EMAIL:
-                    getAsEmail();
+                case DATE:
+                    getAsDate();
                     break;
-                case ENUM:
-                    getAsEnum();
+                case DATE_INV:
+                    getAsDateInv();
                     break;
             }
         } catch (Exception e) {
